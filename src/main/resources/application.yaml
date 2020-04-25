@@ -1,0 +1,8 @@
+renderer:
+  memberWidth: 160
+  memberHeight: 80
+
+logging:
+  level:
+    hu.skzs.familytree: INFO
+    root: INFO
