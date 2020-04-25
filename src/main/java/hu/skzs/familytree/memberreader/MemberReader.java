@@ -17,7 +17,7 @@ public class MemberReader {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(MemberReader.class);
 
-	private CsvMemberReader csvMemberReader;
+	private final CsvMemberReader csvMemberReader;
 
 	public MemberReader(CsvMemberReader csvMemberReader) {
 		this.csvMemberReader = Objects.requireNonNull(csvMemberReader);
@@ -103,6 +103,7 @@ public class MemberReader {
 		person.setName(csvMember.getName());
 		person.setBirthDate(csvMember.getBirthDate());
 		person.setBirthPlace(csvMember.getBirthPlace());
+		person.setImage(csvMember.getImage());
 		return person;
 	}
 }

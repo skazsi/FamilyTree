@@ -37,7 +37,6 @@ class ImageReaderCsvMemberReaderDecoratorTest {
 
 		// Then
 		then(throwable).isInstanceOf(NullPointerException.class);
-
 	}
 
 	@Test
@@ -47,7 +46,6 @@ class ImageReaderCsvMemberReaderDecoratorTest {
 
 		// Then
 		then(throwable).isInstanceOf(NullPointerException.class);
-
 	}
 
 	@Test

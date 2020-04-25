@@ -18,6 +18,8 @@ public class Person implements Member {
 
 	private Date died;
 
+	private byte[] image;
+
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -58,6 +60,14 @@ public class Person implements Member {
 		return died;
 	}
 
+	public void setImage(byte[] image) {
+		this.image = image;
+	}
+
+	public byte[] getImage() {
+		return image;
+	}
+
 	@Override
 	public String toString() {
 		StringJoiner stringJoiner = new StringJoiner(",", Person.class.getSimpleName() + "[", "]");
@@ -66,6 +76,7 @@ public class Person implements Member {
 		stringJoiner.add("birthDate=" + birthDate.toString());
 		stringJoiner.add("birthPlace=" + birthPlace);
 		stringJoiner.add("died=" + (died != null ? died.toString() : ""));
+		stringJoiner.add("image=" + (image != null ? "<yes>" : "<no>"));
 		return stringJoiner.toString();
 	}
 

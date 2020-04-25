@@ -8,7 +8,12 @@ public class RendererConfiguration {
 
 	@Bean
 	public Renderer renderer() {
-		return new Renderer();
+		return new Renderer(imageProvider());
+	}
+
+	@Bean
+	public ImageProvider imageProvider() {
+		return new ImageProvider();
 	}
 
 }

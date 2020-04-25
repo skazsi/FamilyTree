@@ -1,16 +1,13 @@
 package hu.skzs.familytree.renderer;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
-import java.awt.Image;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.util.List;
-
-import javax.imageio.ImageIO;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Value;
 
@@ -26,13 +23,23 @@ public class Renderer {
 	@Value("${renderer.memberHeight}")
 	private int memberHeight;
 
+	private final ImageProvider imageProvider;
+
+	public Renderer(ImageProvider imageProvider) {
+		this.imageProvider = Objects.requireNonNull(imageProvider);
+	}
+
 	public BufferedImage renderer(List<Member> members) throws Exception {
 
 		Dimension dimension = getDimension(memberWidth, memberHeight, members);
 
-		BufferedImage image = new BufferedImage(dimension.width, dimension.height,
-				BufferedImage.TYPE_INT_RGB);
+		BufferedImage image = new BufferedImage(dimension.width, dimension.height, BufferedImage.TYPE_INT_RGB);
 		Graphics2D graphics = image.createGraphics();
+
+		RenderingHints rh = new RenderingHints(RenderingHints.KEY_TEXT_ANTIALIASING,
+				RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		graphics.setRenderingHints(rh);
+
 		Font font = new Font("Arial", Font.PLAIN, 10);
 		graphics.setFont(font);
 
@@ -40,16 +47,6 @@ public class Renderer {
 		graphics.fillRect(0, 0, dimension.width + memberWidth, dimension.height + memberHeight);
 
 		drawNames(1, 1, members, graphics);
-
-		BufferedImage avatar = ImageIO.read(new File("c:/Downloads/avatar.jpg"));
-		Graphics2D avatarGraphics = avatar.createGraphics();
-		avatarGraphics.setColor(new Color(255, 255, 255));
-		avatarGraphics.setStroke(new BasicStroke(20));
-		avatarGraphics.drawOval(-10, -10, 116, 116);
-		Image avatar2 = Transparency.makeColorTransparent(avatar, new Color(255, 255, 255));
-
-		graphics.drawImage(avatar2, 30, 30, 96, 96, null);
-
 
 		return image;
 	}
@@ -87,9 +84,14 @@ public class Renderer {
 
 				int nameWidth = graphics.getFontMetrics().stringWidth(person.getName());
 
+				graphics.drawImage(imageProvider.getImage(person),
+						horizontalPosition * memberWidth - nameWidth - ((memberWidth - nameWidth) / 2),
+						verticalPosiotion * memberHeight - memberHeight / 2, null);
+
 				graphics.drawString(person.getName(),
 						horizontalPosition * memberWidth - nameWidth - ((memberWidth - nameWidth) / 2),
 						verticalPosiotion * memberHeight - memberHeight / 2);
+
 			}
 
 			else if (member instanceof Couple) {
@@ -98,6 +100,10 @@ public class Renderer {
 
 				int nameWidth = graphics.getFontMetrics()
 						.stringWidth(couple.getPerson().getName() + " + " + couple.getPartner().getName());
+
+				graphics.drawImage(imageProvider.getImage(couple.getPerson()),
+						horizontalPosition * memberWidth - nameWidth - ((memberWidth - nameWidth) / 2),
+						verticalPosiotion * memberHeight - memberHeight / 2, null);
 
 				graphics.drawString(couple.getPerson().getName() + " + " + couple.getPartner().getName(),
 						horizontalPosition * memberWidth - nameWidth - ((memberWidth - nameWidth) / 2),

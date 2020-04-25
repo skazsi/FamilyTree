@@ -6,8 +6,8 @@ import java.util.Objects;
 
 class ImageReaderCsvMemberReaderDecorator implements CsvMemberReader {
 
-	private CsvMemberReader decorated;
-	private ImageReader imageReader;
+	private final CsvMemberReader decorated;
+	private final ImageReader imageReader;
 
 	public ImageReaderCsvMemberReaderDecorator(CsvMemberReader decorated, ImageReader imageReader) {
 		this.decorated = Objects.requireNonNull(decorated);
