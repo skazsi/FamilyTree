@@ -1,6 +1,6 @@
 renderer:
   memberWidth: 160
-  memberHeight: 80
+  memberHeight: 160
   imageSize: 80
 
 logging:

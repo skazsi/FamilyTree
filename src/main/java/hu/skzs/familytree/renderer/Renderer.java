@@ -6,8 +6,8 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
-import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Value;
 
@@ -29,15 +29,14 @@ public class Renderer {
 		this.imageProvider = Objects.requireNonNull(imageProvider);
 	}
 
-	public BufferedImage renderer(List<Member> members) throws Exception {
+	public BufferedImage renderer(Set<Member> members) throws Exception {
 
 		Dimension dimension = getDimension(memberWidth, memberHeight, members);
 
 		BufferedImage image = new BufferedImage(dimension.width, dimension.height, BufferedImage.TYPE_INT_RGB);
 		Graphics2D graphics = image.createGraphics();
 
-		RenderingHints rh = new RenderingHints(RenderingHints.KEY_TEXT_ANTIALIASING,
-				RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		RenderingHints rh = new RenderingHints(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 		graphics.setRenderingHints(rh);
 
 		Font font = new Font("Arial", Font.PLAIN, 10);
@@ -46,12 +45,12 @@ public class Renderer {
 		graphics.setColor(Color.white);
 		graphics.fillRect(0, 0, dimension.width + memberWidth, dimension.height + memberHeight);
 
-		drawNames(1, 1, members, graphics);
+		drawMember(1, 1, members, graphics);
 
 		return image;
 	}
 
-	private Dimension getDimension(int width, int height, List<Member> members) {
+	private Dimension getDimension(int width, int height, Set<Member> members) {
 
 		width = width - memberWidth;
 
@@ -70,8 +69,7 @@ public class Renderer {
 		return new Dimension(width, height);
 	}
 
-	private Dimension drawNames(int horizontalPosition, int verticalPosiotion, List<Member> members,
-			Graphics2D graphics) {
+	private Dimension drawMember(int horizontalPosition, int verticalPosiotion, Set<Member> members, Graphics2D graphics) {
 
 		horizontalPosition--;
 
@@ -84,13 +82,10 @@ public class Renderer {
 
 				int nameWidth = graphics.getFontMetrics().stringWidth(person.getName());
 
-				graphics.drawImage(imageProvider.getImage(person),
-						horizontalPosition * memberWidth - nameWidth - ((memberWidth - nameWidth) / 2),
-						verticalPosiotion * memberHeight - memberHeight / 2, null);
+				graphics.drawImage(imageProvider.getImage(person), horizontalPosition * memberWidth - nameWidth - ((memberWidth - nameWidth) / 2), verticalPosiotion * memberHeight - memberHeight / 2,
+						null);
 
-				graphics.drawString(person.getName(),
-						horizontalPosition * memberWidth - nameWidth - ((memberWidth - nameWidth) / 2),
-						verticalPosiotion * memberHeight - memberHeight / 2);
+				graphics.drawString(person.getName(), horizontalPosition * memberWidth - nameWidth - ((memberWidth - nameWidth) / 2), verticalPosiotion * memberHeight - memberHeight / 2);
 
 			}
 
@@ -98,20 +93,16 @@ public class Renderer {
 				Couple couple = (Couple) member;
 				graphics.setColor(Color.black);
 
-				int nameWidth = graphics.getFontMetrics()
-						.stringWidth(couple.getPerson().getName() + " + " + couple.getPartner().getName());
+				int nameWidth = graphics.getFontMetrics().stringWidth(couple.getPerson().getName() + " + " + couple.getPartner().getName());
 
-				graphics.drawImage(imageProvider.getImage(couple.getPerson()),
-						horizontalPosition * memberWidth - nameWidth - ((memberWidth - nameWidth) / 2),
+				graphics.drawImage(imageProvider.getImage(couple.getPerson()), horizontalPosition * memberWidth - nameWidth - ((memberWidth - nameWidth) / 2),
 						verticalPosiotion * memberHeight - memberHeight / 2, null);
 
-				graphics.drawString(couple.getPerson().getName() + " + " + couple.getPartner().getName(),
-						horizontalPosition * memberWidth - nameWidth - ((memberWidth - nameWidth) / 2),
+				graphics.drawString(couple.getPerson().getName() + " + " + couple.getPartner().getName(), horizontalPosition * memberWidth - nameWidth - ((memberWidth - nameWidth) / 2),
 						verticalPosiotion * memberHeight - memberHeight / 2);
 
 				if (!couple.getDescendants().isEmpty()) {
-					Dimension dimension = drawNames(horizontalPosition, verticalPosiotion + 1, couple.getDescendants(),
-							graphics);
+					Dimension dimension = drawMember(horizontalPosition, verticalPosiotion + 1, couple.getDescendants(), graphics);
 					horizontalPosition = Math.max(horizontalPosition, dimension.width);
 				}
 			}

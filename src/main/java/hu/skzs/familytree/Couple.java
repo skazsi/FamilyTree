@@ -1,14 +1,14 @@
 package hu.skzs.familytree;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 import java.util.StringJoiner;
+import java.util.TreeSet;
 
 public class Couple implements Member {
 
 	private Person person;
 	private Person partner;
-	private List<Member> descendants = new ArrayList<>();
+	private Set<Member> descendants = new TreeSet<>(new MemberComparator());
 
 	public void setPerson(Person person) {
 		this.person = person;
@@ -30,7 +30,7 @@ public class Couple implements Member {
 		this.descendants.add(descendant);
 	}
 
-	public List<Member> getDescendants() {
+	public Set<Member> getDescendants() {
 		return descendants;
 	}
 

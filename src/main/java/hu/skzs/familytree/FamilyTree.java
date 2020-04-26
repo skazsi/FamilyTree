@@ -2,7 +2,7 @@ package hu.skzs.familytree;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.util.List;
+import java.util.Set;
 
 import javax.imageio.ImageIO;
 
@@ -43,7 +43,7 @@ public class FamilyTree implements CommandLineRunner
 
 		File csvFile = new File(args[0]);
 
-		List<Member> members = memberReader.read(csvFile);
+		Set<Member> members = memberReader.read(csvFile);
 		BufferedImage image = renderer.renderer(members);
 		ImageIO.write(image, "PNG", new File(args[1]));
 

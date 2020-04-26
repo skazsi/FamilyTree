@@ -1,16 +1,17 @@
 package hu.skzs.familytree.memberreader;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import hu.skzs.familytree.Couple;
 import hu.skzs.familytree.Member;
+import hu.skzs.familytree.MemberComparator;
 import hu.skzs.familytree.Person;
 
 public class MemberReader {
@@ -23,8 +24,8 @@ public class MemberReader {
 		this.csvMemberReader = Objects.requireNonNull(csvMemberReader);
 	}
 
-	public List<Member> read(File csvFile) {
-		List<Member> members = new ArrayList<>();
+	public Set<Member> read(File csvFile) {
+		Set<Member> members = new TreeSet<>(new MemberComparator());
 
 		Map<String, CsvMember> csvMembers = csvMemberReader.read(csvFile);
 
