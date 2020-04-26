@@ -79,11 +79,13 @@ class MemberComparatorTest {
 		// Given
 		given(person1.getBirthDate()).willReturn(new Date(30));
 		given(couple1.getPerson().getBirthDate()).willReturn(new Date(30));
+		given(person1.getName()).willReturn("zzz");
+		given(couple1.getPerson().getName()).willReturn("aaa");
 
 		// When
 		int compare = underTest.compare(person1, couple1);
 
 		// Then
-		BDDAssertions.then(compare).isZero();
+		BDDAssertions.then(compare).isPositive();
 	}
 }
