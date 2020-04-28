@@ -1,5 +1,6 @@
 package hu.skzs.familytree.renderer;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -23,6 +24,12 @@ public class Renderer {
 	@Value("${renderer.memberHeight}")
 	private int memberHeight;
 
+	@Value("${renderer.imageSize}")
+	private int imageSize;
+
+	@Value("${renderer.lineVerticalSpace}")
+	private int lineVerticalSpace;
+
 	private final ImageProvider imageProvider;
 
 	public Renderer(ImageProvider imageProvider) {
@@ -31,12 +38,16 @@ public class Renderer {
 
 	public BufferedImage renderer(Set<Member> members) throws Exception {
 
-		Dimension dimension = getDimension(memberWidth, memberHeight, members);
+		GridLayout gridLayout = new GridLayout(members);
+
+
+		Dimension dimension = new Dimension(memberWidth * gridLayout.getHorizontalSize(), memberHeight * gridLayout.getNumberOfGenerations());
 
 		BufferedImage image = new BufferedImage(dimension.width, dimension.height, BufferedImage.TYPE_INT_RGB);
 		Graphics2D graphics = image.createGraphics();
 
 		RenderingHints rh = new RenderingHints(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		rh.add(new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON));
 		graphics.setRenderingHints(rh);
 
 		Font font = new Font("Arial", Font.PLAIN, 10);
@@ -45,36 +56,51 @@ public class Renderer {
 		graphics.setColor(Color.white);
 		graphics.fillRect(0, 0, dimension.width + memberWidth, dimension.height + memberHeight);
 
-		drawMember(1, 1, members, graphics);
+		drawLines(null, members, gridLayout, graphics);
+		drawMember(members, gridLayout, graphics);
 
 		return image;
 	}
 
-	private Dimension getDimension(int width, int height, Set<Member> members) {
-
-		width = width - memberWidth;
-
+	private void drawLines(Member parent, Set<Member> members, GridLayout gridLayout, Graphics2D graphics) {
 		for (Member member : members) {
-			width = width + memberWidth;
+			if (parent != null) {
+
+				GridPosition position = gridLayout.getPosition(member);
+				int xCellCenter = position.getHorizontalPosition() * memberWidth + position.getHorizontalSize() * memberWidth / 2;
+				int yCellCenter = position.getGeneration() * memberWidth + memberHeight / 2;
+
+				GridPosition parentPosition = gridLayout.getPosition(parent);
+				int xParentCellCenter = parentPosition.getHorizontalPosition() * memberWidth + parentPosition.getHorizontalSize() * memberWidth / 2;
+				int yParentCellCenter = parentPosition.getGeneration() * memberWidth + memberHeight / 2;
+
+				int lineHorizontalSpace = (int) ((double) lineVerticalSpace / (yCellCenter - yParentCellCenter) * Math.abs(xCellCenter - xParentCellCenter));
+
+				graphics.setStroke(new BasicStroke(2));
+				graphics.setColor(Color.gray);
+				if (xParentCellCenter > xCellCenter) {
+					graphics.drawLine(xParentCellCenter - lineHorizontalSpace, yParentCellCenter + lineVerticalSpace, xCellCenter + lineHorizontalSpace, yCellCenter - lineVerticalSpace);
+				}
+				else {
+					graphics.drawLine(xParentCellCenter + lineHorizontalSpace, yParentCellCenter + lineVerticalSpace, xCellCenter - lineHorizontalSpace, yCellCenter - lineVerticalSpace);
+				}
+			}
+
 			if (member instanceof Couple) {
 				Couple couple = (Couple) member;
+
 				if (!couple.getDescendants().isEmpty()) {
-					Dimension dimension = getDimension(width, height + memberHeight, couple.getDescendants());
-					width = Math.max(width, dimension.width);
-					height = Math.max(height, dimension.height);
+					drawLines(member, couple.getDescendants(), gridLayout, graphics);
 				}
 			}
 		}
-
-		return new Dimension(width, height);
 	}
 
-	private Dimension drawMember(int horizontalPosition, int verticalPosiotion, Set<Member> members, Graphics2D graphics) {
-
-		horizontalPosition--;
-
+	private void drawMember(Set<Member> members, GridLayout gridLayout, Graphics2D graphics) {
 		for (Member member : members) {
-			horizontalPosition++;
+			GridPosition position = gridLayout.getPosition(member);
+			int xCellCenter = position.getHorizontalPosition() * memberWidth + position.getHorizontalSize() * memberWidth / 2;
+			int yCellCenter = position.getGeneration() * memberWidth + memberHeight / 2;
 
 			if (member instanceof Person) {
 				Person person = (Person) member;
@@ -82,11 +108,8 @@ public class Renderer {
 
 				int nameWidth = graphics.getFontMetrics().stringWidth(person.getName());
 
-				graphics.drawImage(imageProvider.getImage(person), horizontalPosition * memberWidth - nameWidth - ((memberWidth - nameWidth) / 2), verticalPosiotion * memberHeight - memberHeight / 2,
-						null);
-
-				graphics.drawString(person.getName(), horizontalPosition * memberWidth - nameWidth - ((memberWidth - nameWidth) / 2), verticalPosiotion * memberHeight - memberHeight / 2);
-
+				graphics.drawImage(imageProvider.getImage(person), xCellCenter - imageSize / 2, yCellCenter - imageSize / 2, null);
+				graphics.drawString(person.getName(), xCellCenter - nameWidth / 2, yCellCenter - imageSize / 2);
 			}
 
 			else if (member instanceof Couple) {
@@ -95,20 +118,14 @@ public class Renderer {
 
 				int nameWidth = graphics.getFontMetrics().stringWidth(couple.getPerson().getName() + " + " + couple.getPartner().getName());
 
-				graphics.drawImage(imageProvider.getImage(couple.getPerson()), horizontalPosition * memberWidth - nameWidth - ((memberWidth - nameWidth) / 2),
-						verticalPosiotion * memberHeight - memberHeight / 2, null);
-
-				graphics.drawString(couple.getPerson().getName() + " + " + couple.getPartner().getName(), horizontalPosition * memberWidth - nameWidth - ((memberWidth - nameWidth) / 2),
-						verticalPosiotion * memberHeight - memberHeight / 2);
+				graphics.drawImage(imageProvider.getImage(couple.getPartner()), xCellCenter - 10, yCellCenter - imageSize / 2, null);
+				graphics.drawImage(imageProvider.getImage(couple.getPerson()), xCellCenter - imageSize + 10, yCellCenter - imageSize / 2, null);
+				graphics.drawString(couple.getPerson().getName() + " + " + couple.getPartner().getName(), xCellCenter - nameWidth / 2, yCellCenter - imageSize / 2);
 
 				if (!couple.getDescendants().isEmpty()) {
-					Dimension dimension = drawMember(horizontalPosition, verticalPosiotion + 1, couple.getDescendants(), graphics);
-					horizontalPosition = Math.max(horizontalPosition, dimension.width);
+					drawMember(couple.getDescendants(), gridLayout, graphics);
 				}
 			}
-
 		}
-
-		return new Dimension(horizontalPosition, verticalPosiotion);
 	}
 }

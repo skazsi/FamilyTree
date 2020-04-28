@@ -2,6 +2,7 @@ renderer:
   memberWidth: 160
   memberHeight: 160
   imageSize: 80
+  lineVerticalSpace: 50
 
 logging:
   level:
