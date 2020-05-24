@@ -108,7 +108,7 @@ class ImageProvider {
 		graphics.setStroke(new BasicStroke(1));
 		graphics.setColor(new Color(255, 255, 255));
 		graphics.drawOval(1, 1, bufferedImage.getWidth() - 3, bufferedImage.getHeight() - 3);
-		graphics.setColor(Color.blue);
+		graphics.setColor(Color.gray);
 		graphics.drawOval(0, 0, bufferedImage.getWidth() - 1, bufferedImage.getHeight() - 1);
 		return bufferedImage;
 	}

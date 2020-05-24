@@ -93,7 +93,9 @@ public class CsvMember {
 	}
 
 	public void setBirthPlace(String birthPlace) {
-		this.birthPlace = birthPlace;
+		if (StringUtils.hasLength(birthPlace)) {
+			this.birthPlace = birthPlace;
+		}
 	}
 
 	public String getBirthPlace() {

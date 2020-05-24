@@ -104,6 +104,7 @@ public class MemberReader {
 		person.setName(csvMember.getName());
 		person.setBirthDate(csvMember.getBirthDate());
 		person.setBirthPlace(csvMember.getBirthPlace());
+		person.setDied(csvMember.getDied());
 		person.setImage(csvMember.getImage());
 		return person;
 	}

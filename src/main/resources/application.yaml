@@ -1,8 +1,10 @@
 renderer:
-  memberWidth: 160
-  memberHeight: 160
-  imageSize: 80
-  lineVerticalSpace: 50
+  debugGrid: false
+  memberWidth: 220
+  memberHeight: 200
+  imageSize: 110
+  lineVerticalSpace: 80
+  dateFormat: yyyy.MM.dd
 
 logging:
   level:
