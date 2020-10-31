@@ -38,7 +38,7 @@ public class FamilyTree implements CommandLineRunner
 		LOG.info("EXECUTING : command line runner");
 
 		if (args.length != 2) {
-			throw new IllegalArgumentException("Inbvalid parameters");
+			throw new IllegalArgumentException("Invalid parameters");
 		}
 
 		File csvFile = new File(args[0]);
